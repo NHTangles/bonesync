@@ -34,12 +34,12 @@ do
     do
         debug "New: $FN ($SUM)"
         DN="`dirname $FN`"
-        [ -d $DN ] || debug "No directory $DN - ignored." && continue
+        [ -d $DN ] || ( debug "No directory $DN - ignored." && continue )
 
         # If the file dne locally, copy the remote one.
         # note that the game may have created a different file with the same name locally.
         # In this case, just keep the local.
-        [ -e $FN ] || scp "$REMPATH/$FN" "$FN" && chown games:games "$FN"
+        [ -e $FN ] || ( scp "$REMPATH/$FN" "$FN" && chown games:games "$FN" )
 
     done
 done <<REMOTES
