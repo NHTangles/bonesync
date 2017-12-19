@@ -1,0 +1,13 @@
+# This is a sample remotes file.
+# It will probably be kept accutate for the hardfought network
+# but you should define your own, and set REMOTES in the config
+# to point to it.
+# Format is: tag ssh_path_to_chroot
+# ssh path is user@fqdn:/chroot/path
+# the ssh user needs to trust our ssh pubkey, and have read
+# access to all the bones files.
+# set MYTAG to match the tag corresponding to the local server
+# (rather than maintaining different remotes for each server)
+# Comments start with a '#' and will be ignored.  
+hdf-eu nhsync@eu.hardfought.org:/opt/nethack/chroot
+hdf-us nhsync@hardfought.org:/opt/nethack/hardfought.org

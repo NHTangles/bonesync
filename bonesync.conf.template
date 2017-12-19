@@ -1,0 +1,12 @@
+# this file must be named bonesync.conf,
+# and reside in the same directory as bonesync.sh
+# bonesync.sh runs as root and sources this file.
+# please secure it accordingly
+
+# Mandatory:
+#MYTAG=hdf-eu
+#REMOTES=/home/build/bonesync/remotes.txt
+#MYCHROOT=/opt/nethack/chroot
+
+# Optoinal:
+#DEBUG=1 

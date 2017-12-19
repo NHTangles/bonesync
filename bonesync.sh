@@ -1,7 +1,17 @@
 #!/bin/sh
+MYDIR="$( cd "$(dirname "$0")" ; pwd -P )"
+DEBUG=0
+# set up environment in bonesync.conf. Must reside in same dir as script.
+. "$MYDIR/bonesync.conf" 
 # Set this to match the tag of the local server in the list below
-MYTAG=hdf-eu
-DEBUG=1
+bail()
+{
+    echo "$@" >&2
+    exit 1
+}
+[ -z "$MYTAG" ] && bail "set MYTAG to the tag of the local server."
+[ -z "$REMOTES" ] && bail "set REMOTES to path of file containing remote servers."
+[ -z "$MYCHROOT" ] && bail "set MYCHROOT to path of dgl chroot dir."
 debug()
 {
     [ "$DEBUG" = "0" ] || echo "$@"
@@ -10,12 +20,15 @@ debug()
 RM="rm -f"
 [ "$DEBUG" = "0" ] || RM="rm -v"
 
+debug ===================================
 debug $0 run started at `date`
-while read TAG REMPATH
+cd $MYCHROOT
+# rudimentary comment stripping
+cat $REMOTES | cut -f1 -d'#' | grep -v '^\s*$' | while read TAG REMPATH
 do 
-    debug tag $TAG
+    debug -n "$TAG: "
     [ "$TAG" = "$MYTAG" ] && debug "Ignoring local server."  && continue
-    debug path $REMPATH
+    debug "$REMPATH"
     [ -e bones.$TAG.txt ] && mv bones.$TAG.txt bones.$TAG.old
     scp $REMPATH/bones.txt bones.$TAG.txt
     # remote deletes.
@@ -42,10 +55,7 @@ do
         [ -e $FN ] || ( scp "$REMPATH/$FN" "$FN" && chown games:games "$FN" )
 
     done
-done <<REMOTES
-hdf-eu nhsync@eu.hardfought.org:/opt/nethack/chroot
-hdf-us nhsync@hardfought.org:/opt/nethack/hardfought.org
-REMOTES
+done
 # finally, publish list of bones files on this server.
 find . -type f -name 'bon[A-Z]*' -print | xargs md5sum > bones.txt
 debug $0 run ended at `date`
