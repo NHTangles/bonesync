@@ -1,1 +1,3 @@
 bonesync.conf
+*_rsa
+*.pub
