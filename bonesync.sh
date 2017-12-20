@@ -3,7 +3,8 @@ MYDIR="$( cd "$(dirname "$0")" ; pwd -P )"
 DEBUG=0
 # set up environment in bonesync.conf. Must reside in same dir as script.
 . "$MYDIR/bonesync.conf" 
-# Set this to match the tag of the local server in the list below
+SCP=scp
+[ -z "$MYSSHKEY" ] || SCP="scp -i $MYSSHKEY"
 bail()
 {
     echo "$@" >&2
@@ -30,7 +31,7 @@ do
     [ "$TAG" = "$MYTAG" ] && debug "Ignoring local server."  && continue
     debug "$REMPATH"
     [ -e bones.$TAG.txt ] && mv bones.$TAG.txt bones.$TAG.old
-    scp $REMPATH/bones.txt bones.$TAG.txt
+    $SCP $REMPATH/bones.txt bones.$TAG.txt
     # remote deletes.
     cat bones.$TAG.old bones.$TAG.txt bones.$TAG.txt | sort | uniq -u | while read SUM FN
     do
@@ -52,7 +53,7 @@ do
         # If the file dne locally, copy the remote one.
         # note that the game may have created a different file with the same name locally.
         # In this case, just keep the local.
-        [ -e $FN ] || ( scp "$REMPATH/$FN" "$FN" && chown games:games "$FN" )
+        [ -e $FN ] || ( $SCP "$REMPATH/$FN" "$FN" && chown games:games "$FN" )
 
     done
 done

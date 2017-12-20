@@ -5,8 +5,10 @@
 
 # Mandatory:
 #MYTAG=hdf-eu
-#REMOTES=/home/build/bonesync/remotes.txt
+#REMOTES=/opt/bonesync/remotes.txt
 #MYCHROOT=/opt/nethack/chroot
 
 # Optoinal:
 #DEBUG=1 
+# file containing PRIVATE key trusted by server.
+#MYSSHKEY=/opt/bonesync/bonesync_rsa
