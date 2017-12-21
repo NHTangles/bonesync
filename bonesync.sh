@@ -23,6 +23,7 @@ RM="rm -f"
 
 debug ===================================
 debug $0 run started at `date`
+umask 007
 cd $MYCHROOT
 # rudimentary comment stripping
 cat $REMOTES | cut -f1 -d'#' | grep -v '^\s*$' | while read TAG REMPATH
