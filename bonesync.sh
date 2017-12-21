@@ -49,13 +49,14 @@ do
     do
         debug "New: $FN ($SUM)"
         DN="`dirname $FN`"
-        [ -d $DN ] || ( debug "No directory $DN - ignored." && continue )
-
-        # If the file dne locally, copy the remote one.
-        # note that the game may have created a different file with the same name locally.
-        # In this case, just keep the local.
-        [ -e $FN ] || ( $SCP "$REMPATH/$FN" "$FN" && chown games:games "$FN" )
-
+        if [ -d $DN ] ; then
+            # If the file dne locally, copy the remote one.
+            # note that the game may have created a different file with the same name locally.
+            # In this case, just keep the local.
+            [ -e $FN ] || ( $SCP "$REMPATH/$FN" "$FN" && chown games:games "$FN" )
+        else
+            debug "No directory $DN - ignored."
+       fi
     done
 done
 # finally, publish list of bones files on this server.
