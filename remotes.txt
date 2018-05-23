@@ -9,5 +9,6 @@
 # set MYTAG to match the tag corresponding to the local server
 # (rather than maintaining different remotes for each server)
 # Comments start with a '#' and will be ignored.  
+hdf-au nhsync@au.hardfought.org:/opt/nethack/chroot
 hdf-eu nhsync@eu.hardfought.org:/opt/nethack/chroot
 hdf-us nhsync@hardfought.org:/opt/nethack/hardfought.org
