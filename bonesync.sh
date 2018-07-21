@@ -1,22 +1,26 @@
 #!/bin/sh
-MYDIR="$( cd "$(dirname "$0")" ; pwd -P )"
 DEBUG=0
-# set up environment in bonesync.conf. Must reside in same dir as script.
-. "$MYDIR/bonesync.conf" 
-SCP=scp
-[ -z "$MYSSHKEY" ] || SCP="scp -i $MYSSHKEY"
+
 bail()
 {
     echo "$@" >&2
     exit 1
 }
-[ -z "$MYTAG" ] && bail "set MYTAG to the tag of the local server."
-[ -z "$REMOTES" ] && bail "set REMOTES to path of file containing remote servers."
-[ -z "$MYCHROOT" ] && bail "set MYCHROOT to path of dgl chroot dir."
+
 debug()
 {
     [ "$DEBUG" = "0" ] || echo "$@"
 }
+
+# set up environment in bonesync.conf. Must reside in same dir as script.
+MYDIR="$( cd "$(dirname "$0")" ; pwd -P )"
+[ -s "$MYDIR/bonesync.conf" ] || bail "set local config in bonesync.conf"
+. "$MYDIR/bonesync.conf"
+SCP=scp
+[ -z "$MYSSHKEY" ] || SCP="scp -i $MYSSHKEY"
+[ -z "$MYTAG" ] && bail "set MYTAG to the tag of the local server."
+[ -z "$REMOTES" ] && bail "set REMOTES to path of file containing remote servers."
+[ -z "$MYCHROOT" ] && bail "set MYCHROOT to path of dgl chroot dir."
 
 RM="rm -f"
 [ "$DEBUG" = "0" ] || RM="rm -v"
@@ -31,8 +35,9 @@ do
     debug -n "$TAG: "
     [ "$TAG" = "$MYTAG" ] && debug "Ignoring local server."  && continue
     debug "$REMPATH"
-    [ -e bones.$TAG.txt ] && mv bones.$TAG.txt bones.$TAG.old
+    [ -s bones.$TAG.txt ] && mv bones.$TAG.txt bones.$TAG.old
     $SCP $REMPATH/bones.txt bones.$TAG.txt
+    [ -s bones.$TAG.txt ] || echo "Failed to get bones from $TAG" && continue
     # remote deletes.
     cat bones.$TAG.old bones.$TAG.txt bones.$TAG.txt | sort | uniq -u | while read SUM FN
     do
