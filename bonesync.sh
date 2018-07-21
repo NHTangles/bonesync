@@ -11,7 +11,6 @@ debug()
 {
     [ "$DEBUG" = "0" ] || echo "$@"
 }
-
 # set up environment in bonesync.conf. Must reside in same dir as script.
 MYDIR="$( cd "$(dirname "$0")" ; pwd -P )"
 [ -s "$MYDIR/bonesync.conf" ] || bail "set local config in bonesync.conf"
@@ -35,9 +34,10 @@ do
     debug -n "$TAG: "
     [ "$TAG" = "$MYTAG" ] && debug "Ignoring local server."  && continue
     debug "$REMPATH"
-    [ -s bones.$TAG.txt ] && mv bones.$TAG.txt bones.$TAG.old
+    [ -f bones.$TAG.txt ] && mv bones.$TAG.txt bones.$TAG.old
     $SCP $REMPATH/bones.txt bones.$TAG.txt
-    [ -s bones.$TAG.txt ] || echo "Failed to get bones from $TAG" && continue
+    [ ! -f bones.$TAG.txt ] && echo "Failed to get bones from $TAG" && continue
+    [ -s bones.$TAG.txt ] || echo "WARNING: Empty bones list from $TAG."
     # remote deletes.
     cat bones.$TAG.old bones.$TAG.txt bones.$TAG.txt | sort | uniq -u | while read SUM FN
     do
@@ -45,7 +45,6 @@ do
         debug "Consumed on remote: $FN ($SUM)"
         OURSUM=`md5sum $FN 2>/dev/null | cut -f1 -d' '` # empty string if $FN dne locally
         [ "$OURSUM" = "$SUM" ] && $RM "$FN"
-
     done
     # remote adds. Either new bones on remote, or possibly from us, or another remote
     # also filter anything in our local bones.txt, since we either already have it, or it was used locally.
@@ -65,5 +64,5 @@ do
     done
 done
 # finally, publish list of bones files on this server.
-find . -type f -name 'bon[A-Z]*' -print | xargs md5sum > bones.txt
+find . -type f -name 'bon[A-Z]*' -print | xargs -r md5sum > bones.txt
 debug $0 run ended at `date`
