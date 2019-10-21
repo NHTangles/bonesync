@@ -28,7 +28,8 @@ debug ===================================
 debug $0 run started at `date`
 umask 007
 cd $MYCHROOT/$TNNTVAR
-MYDATE=`head -1 npcdata`
+MYDATE=0
+[ -s npcdata ] && MYDATE=`head -1 npcdata`
 # rudimentary comment stripping
 cat $REMOTES | cut -f1 -d'#' | grep -v '^\s*$' | while read TAG REMPATH
 do 
@@ -38,13 +39,18 @@ do
     [ -f npcdata.$TAG ] && mv npcdata.$TAG npcdata.$TAG.old
     $SCP $REMPATH/$TNNTVAR/npcdata npcdata.$TAG
     [ ! -f npcdata.$TAG ] && echo "Failed to get npcdata from $TAG" && continue
-    [ -s npcdata.$TAG ] || echo "WARNING: Empty npcdata from $TAG."
-    NEWDATE=`head -1 npcdata.$TAG`
-    if [ $NEWDATE -gt $MYDATE]
+    if [ -s npcdata.$TAG ] 
+    then
+        NEWDATE=`head -1 npcdata.$TAG`
+    else
+        echo "WARNING: Empty npcdata from $TAG."
+        NEWDATE=0
+    fi
+    if [ $NEWDATE -gt $MYDATE ]
     then
         echo "npcdata from $TAG ($NEWDATE) newer than local ($MYDATE) - replacing"
         MYDATE=$NEWDATE # So we don't copy it multiple times needlessly
-        mv npcdata npcdata.old #mv will not disrupt open file descriptors
+        [ -f npcdata ] && mv npcdata npcdata.old #mv will not disrupt open file descriptors
         mv npcdata.$TAG npcdata
     fi
 done
