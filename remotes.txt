@@ -11,4 +11,4 @@
 # Comments start with a '#' and will be ignored.  
 hdf-au nhsync@au.hardfought.org:/opt/nethack/chroot
 hdf-eu nhsync@eu.hardfought.org:/opt/nethack/chroot
-hdf-us nhsync@hardfought.org:/opt/nethack/hardfought.org
+hdf-us nhsync@hardfought.org:/opt/nethack/chroot
