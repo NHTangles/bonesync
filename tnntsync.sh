@@ -1,5 +1,5 @@
 #!/bin/sh
-DEBUG=1
+DEBUG=0
 TNNTVAR=tnnt/var
 bail()
 {
@@ -50,6 +50,9 @@ do
     then
         echo "npcdata from $TAG ($NEWDATE) newer than local ($MYDATE) - replacing"
         MYDATE=$NEWDATE # So we don't copy it multiple times needlessly
+        # Set perms first, so we don't try to read it before permissions are right.
+        chown games:games npcdata.$TAG
+        chmod 644 npcdata.$TAG
         [ -f npcdata ] && mv npcdata npcdata.old #mv will not disrupt open file descriptors
         mv npcdata.$TAG npcdata
     fi
